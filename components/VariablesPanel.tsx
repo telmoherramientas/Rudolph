@@ -22,7 +22,7 @@ function PctInput({
         <input
           type="number"
           step="0.1"
-          className="w-20 text-right border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-20 text-right border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
           value={(value * 100).toFixed(2)}
           onChange={(e) => onChange(parseFloat(e.target.value) / 100 || 0)}
         />
@@ -50,7 +50,7 @@ function NumInput({
         {prefix && <span className="text-sm text-gray-500">{prefix}</span>}
         <input
           type="number"
-          className="w-28 text-right border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-28 text-right border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
         />
@@ -160,7 +160,7 @@ export default function VariablesPanel({ vars, onChange }: Props) {
                       <input
                         type="number"
                         step="0.1"
-                        className="w-16 text-right border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-16 text-right border border-gray-300 rounded px-2 py-1 text-xs text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                         value={(cfg.comisionPct * 100).toFixed(1)}
                         onChange={(e) =>
                           setSkuField(cfg.sku, "comisionPct", parseFloat(e.target.value) / 100 || 0)
@@ -173,7 +173,7 @@ export default function VariablesPanel({ vars, onChange }: Props) {
                     <label className="text-xs text-gray-600">Com. fija (ARS)</label>
                     <input
                       type="number"
-                      className="w-24 text-right border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-24 text-right border border-gray-300 rounded px-2 py-1 text-xs text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                       value={cfg.comisionFija}
                       onChange={(e) =>
                         setSkuField(cfg.sku, "comisionFija", parseFloat(e.target.value) || 0)
@@ -187,7 +187,7 @@ export default function VariablesPanel({ vars, onChange }: Props) {
                       <input
                         type="number"
                         step="0.01"
-                        className="w-20 text-right border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-20 text-right border border-gray-300 rounded px-2 py-1 text-xs text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                         value={cfg.costoLandUsd}
                         onChange={(e) =>
                           setSkuField(cfg.sku, "costoLandUsd", parseFloat(e.target.value) || 0)
