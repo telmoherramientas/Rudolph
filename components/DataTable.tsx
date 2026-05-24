@@ -16,8 +16,8 @@ function Th({ label, tooltip }: { label: string; tooltip: string }) {
       <div className="relative group inline-flex items-center gap-1 cursor-default">
         <span>{label}</span>
         <span className="text-gray-400 text-xs leading-none">ⓘ</span>
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50 w-52 bg-gray-800 text-white text-xs rounded-lg p-2 shadow-lg pointer-events-none">
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800" />
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 hidden group-hover:block z-50 w-52 bg-gray-800 text-white text-xs rounded-lg p-2 shadow-lg pointer-events-none">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-800" />
           {tooltip}
         </div>
       </div>
