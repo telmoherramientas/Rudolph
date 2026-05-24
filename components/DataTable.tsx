@@ -62,7 +62,8 @@ export default function DataTable({ rows }: Props) {
       <div className="overflow-x-auto rounded-lg border border-gray-200">
         <table className="min-w-full text-xs">
           <thead>
-            <tr className="bg-gray-100 text-gray-600 text-left">
+            <tr className="bg-gray-100 text-gray-800 text-left">
+              <Th label="# Operación" tooltip="ID de la operación en MercadoLibre. Click para abrir el detalle de la venta." />
               <Th label="Fecha" tooltip="Fecha de la venta según MercadoLibre" />
               <Th label="SKU" tooltip="Código interno del producto" />
               <Th label="Título" tooltip="Nombre de la publicación en MercadoLibre" />
@@ -87,13 +88,23 @@ export default function DataTable({ rows }: Props) {
           <tbody className="divide-y divide-gray-100">
             {rows.map((r, i) => (
               <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                <td className="px-3 py-2 text-gray-500 whitespace-nowrap">{r.fechaVenta.split(" ")[0] || "-"}</td>
+                <td className="px-3 py-2 whitespace-nowrap">
+                  <a
+                    href={`https://www.mercadolibre.com.ar/ventas/${r.numeroVenta}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-800 hover:underline font-mono text-xs"
+                  >
+                    {r.numeroVenta}
+                  </a>
+                </td>
+                <td className="px-3 py-2 text-gray-700 whitespace-nowrap">{r.fechaVenta.split(" ")[0] || "-"}</td>
                 <td className="px-3 py-2 font-mono text-blue-700">{r.sku || "-"}</td>
                 <td className="px-3 py-2 max-w-48 truncate text-gray-700" title={r.titulo}>{r.titulo || "-"}</td>
                 <td className="px-3 py-2 text-center">{r.unidades}</td>
                 <td className="px-3 py-2 text-right">${ars(r.facturacionConIva)}</td>
                 <td className="px-3 py-2 text-right font-medium">${ars(r.facturacionSinIva)}</td>
-                <td className="px-3 py-2 text-right text-gray-500">{pct(r.comisionPct)}</td>
+                <td className="px-3 py-2 text-right text-gray-700">{pct(r.comisionPct)}</td>
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comision)}</td>
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comisionFija)}</td>
                 <td className="px-3 py-2 text-right text-red-500">{r.cuotas > 0 ? `-$${ars(r.cuotas)}` : "-"}</td>

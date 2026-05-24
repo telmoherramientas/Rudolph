@@ -9,7 +9,7 @@ interface Props {
 function PctInput({ label, value, onChange }: { label: string; value: number; onChange: (n: number) => void }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <label className="text-sm text-gray-600 flex-1">{label}</label>
+      <label className="text-sm text-gray-800 flex-1">{label}</label>
       <div className="flex items-center gap-1">
         <input
           type="number" step="0.1"
@@ -17,7 +17,7 @@ function PctInput({ label, value, onChange }: { label: string; value: number; on
           value={(value * 100).toFixed(2)}
           onChange={(e) => onChange(parseFloat(e.target.value) / 100 || 0)}
         />
-        <span className="text-sm text-gray-500">%</span>
+        <span className="text-sm text-gray-700">%</span>
       </div>
     </div>
   );
@@ -26,9 +26,9 @@ function PctInput({ label, value, onChange }: { label: string; value: number; on
 function NumInput({ label, value, onChange, prefix }: { label: string; value: number; onChange: (n: number) => void; prefix?: string }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <label className="text-sm text-gray-600 flex-1">{label}</label>
+      <label className="text-sm text-gray-800 flex-1">{label}</label>
       <div className="flex items-center gap-1">
-        {prefix && <span className="text-sm text-gray-500">{prefix}</span>}
+        {prefix && <span className="text-sm text-gray-700">{prefix}</span>}
         <input
           type="number"
           className="w-28 text-right border border-gray-300 rounded px-2 py-1 text-sm text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -67,7 +67,7 @@ export default function VariablesPanel({ vars, onChange }: Props) {
 
       {/* Tasas */}
       <section className="px-4 py-4 border-b border-gray-100">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Tasas impositivas</h3>
+        <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Tasas impositivas</h3>
         <div className="space-y-2">
           <PctInput label="IVA (default)" value={vars.ivaPct} onChange={(v) => set({ ivaPct: v })} />
           <p className="text-xs text-gray-400">Podés cambiar IVA por SKU abajo (21% o 10.5%)</p>
@@ -78,7 +78,7 @@ export default function VariablesPanel({ vars, onChange }: Props) {
 
       {/* Comisión fija MeLi por tramos */}
       <section className="px-4 py-4 border-b border-gray-100">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Comisión fija MeLi</h3>
+        <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Comisión fija MeLi</h3>
         <p className="text-xs text-gray-400 mb-3">Por tramo de precio unitario de venta</p>
         <div className="space-y-2">
           {vars.comisionFijaTiers.map((tier, i) => {
@@ -86,7 +86,7 @@ export default function VariablesPanel({ vars, onChange }: Props) {
             return (
               <div key={i} className="bg-gray-50 rounded-lg p-2 space-y-1.5">
                 <div className="flex items-center justify-between gap-2">
-                  <label className="text-xs text-gray-500">
+                  <label className="text-xs text-gray-700">
                     {i === 0 ? "Hasta $" : "Hasta $"}
                   </label>
                   <input
@@ -98,7 +98,7 @@ export default function VariablesPanel({ vars, onChange }: Props) {
                   />
                 </div>
                 <div className="flex items-center justify-between gap-2">
-                  <label className="text-xs text-gray-500">Comisión</label>
+                  <label className="text-xs text-gray-700">Comisión</label>
                   <div className="flex items-center gap-1">
                     <span className="text-xs text-gray-400">$</span>
                     <input
@@ -117,13 +117,13 @@ export default function VariablesPanel({ vars, onChange }: Props) {
 
       {/* Comisiones % y cuotas */}
       <section className="px-4 py-4 border-b border-gray-100">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Comisiones MercadoLibre</h3>
+        <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Comisiones MercadoLibre</h3>
         <PctInput label="Recargo cuotas" value={vars.cuotasPct} onChange={(v) => set({ cuotasPct: v })} />
       </section>
 
       {/* Cotización */}
       <section className="px-4 py-4 border-b border-gray-100">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Cotización USD</h3>
+        <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Cotización USD</h3>
         <NumInput label="Blue (ARS/USD)" value={vars.cotizacionBlue} onChange={(v) => set({ cotizacionBlue: v })} prefix="$" />
         <p className="text-xs text-gray-400 mt-2">Para convertir el costo de producto en USD a ARS</p>
       </section>
@@ -131,7 +131,7 @@ export default function VariablesPanel({ vars, onChange }: Props) {
       {/* SKU configs */}
       {skus.length > 0 && (
         <section className="px-4 py-4 flex-1">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Configuración por SKU</h3>
+          <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">Configuración por SKU</h3>
           <div className="space-y-4">
             {skus.map((cfg) => (
               <div key={cfg.sku} className="bg-gray-50 rounded-lg p-3 space-y-2">
@@ -143,7 +143,7 @@ export default function VariablesPanel({ vars, onChange }: Props) {
 
                   {/* IVA */}
                   <div className="flex items-center justify-between gap-2">
-                    <label className="text-xs text-gray-600">IVA</label>
+                    <label className="text-xs text-gray-800">IVA</label>
                     <div className="flex gap-1">
                       {[21, 10.5].map((v) => (
                         <button key={v}
@@ -160,20 +160,20 @@ export default function VariablesPanel({ vars, onChange }: Props) {
 
                   {/* Comisión % */}
                   <div className="flex items-center justify-between gap-2">
-                    <label className="text-xs text-gray-600">Comisión %</label>
+                    <label className="text-xs text-gray-800">Comisión %</label>
                     <div className="flex items-center gap-1">
                       <input type="number" step="0.1"
                         className="w-16 text-right border border-gray-300 rounded px-2 py-1 text-xs text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                         value={(cfg.comisionPct * 100).toFixed(1)}
                         onChange={(e) => setSkuField(cfg.sku, "comisionPct", parseFloat(e.target.value) / 100 || 0)}
                       />
-                      <span className="text-xs text-gray-500">%</span>
+                      <span className="text-xs text-gray-700">%</span>
                     </div>
                   </div>
 
                   {/* Premium toggle */}
                   <div className="flex items-center justify-between gap-2">
-                    <label className="text-xs text-gray-600">Publicación Premium</label>
+                    <label className="text-xs text-gray-800">Publicación Premium</label>
                     <button
                       onClick={() => setSkuField(cfg.sku, "esPremium", !cfg.esPremium)}
                       className={`px-2 py-0.5 rounded text-xs font-medium border transition-colors ${
@@ -188,9 +188,9 @@ export default function VariablesPanel({ vars, onChange }: Props) {
 
                   {/* Costo LAND */}
                   <div className="flex items-center justify-between gap-2">
-                    <label className="text-xs text-gray-600">Costo LAND (USD)</label>
+                    <label className="text-xs text-gray-800">Costo LAND (USD)</label>
                     <div className="flex items-center gap-1">
-                      <span className="text-xs text-gray-500">U$D</span>
+                      <span className="text-xs text-gray-700">U$D</span>
                       <input type="number" step="0.01"
                         className="w-20 text-right border border-gray-300 rounded px-2 py-1 text-xs text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
                         value={cfg.costoLandUsd}
