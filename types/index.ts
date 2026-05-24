@@ -49,6 +49,8 @@ export interface ProcessedRow extends MeliRow {
   facturacionConIva: number;
   facturacionSinIva: number;
   iva: number;
+  ivaCredito: number;
+  ivaNeto: number;
   comisionPct: number;
   comision: number;
   comisionFija: number;

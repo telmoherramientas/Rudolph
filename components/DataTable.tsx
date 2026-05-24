@@ -70,6 +70,7 @@ export default function DataTable({ rows }: Props) {
               <Th label="Uds." tooltip="Cantidad de unidades vendidas en esta operación" />
               <Th label="Fact. C/IVA" tooltip="Ingresos por la venta incluyendo IVA. Es el precio que pagó el comprador." />
               <Th label="Fact. S/IVA" tooltip="Ingresos netos de IVA. Base de cálculo para comisiones e IIBB." />
+              <Th label="IVA neto" tooltip="IVA débito (cobrado en la venta) menos IVA crédito (IVA sobre comisiones MeLi). Es lo que efectivamente debés a AFIP por IVA en esta operación." />
               <Th label="Com. %" tooltip="Porcentaje de comisión de MercadoLibre según categoría. Se aplica sobre la Facturación S/IVA." />
               <Th label="Comisión" tooltip="Monto de la comisión porcentual de MeLi = Fact. S/IVA × Com. %" />
               <Th label="Com. Fija" tooltip="Cargo fijo de MeLi por operación según el precio unitario de venta. Configurable por tramos en el panel." />
@@ -104,6 +105,7 @@ export default function DataTable({ rows }: Props) {
                 <td className="px-3 py-2 text-center">{r.unidades}</td>
                 <td className="px-3 py-2 text-right">${ars(r.facturacionConIva)}</td>
                 <td className="px-3 py-2 text-right font-medium">${ars(r.facturacionSinIva)}</td>
+                <td className="px-3 py-2 text-right text-orange-600 font-medium">${ars(r.ivaNeto)}</td>
                 <td className="px-3 py-2 text-right text-gray-700">{pct(r.comisionPct)}</td>
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comision)}</td>
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comisionFija)}</td>

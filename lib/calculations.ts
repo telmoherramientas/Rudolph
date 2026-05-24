@@ -32,6 +32,10 @@ export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
 
   const totalComisiones = comision + comisionFija + cuotas;
 
+  // IVA: débito fiscal (sobre la venta) - crédito fiscal (IVA sobre comisiones MeLi)
+  const ivaCredito = totalComisiones * ivaPct;
+  const ivaNeto = iva - ivaCredito;
+
   const iibb = facturacionSinIva * vars.iibbPct;
   const dyc = facturacionConIva * vars.dycPct;
   const envioNeto = row.ingresoEnvio + row.costoEnvio;
@@ -49,6 +53,8 @@ export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
     facturacionConIva,
     facturacionSinIva,
     iva,
+    ivaCredito,
+    ivaNeto,
     comisionPct,
     comision,
     comisionFija,
