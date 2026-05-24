@@ -83,11 +83,16 @@ export function exportToExcel(rows: ProcessedRow[], vars: Variables): void {
     ["% Cuotas", vars.cuotasPct],
     ["Cotización Blue (ARS/USD)", vars.cotizacionBlue],
     [],
-    ["SKU", "Comisión %", "Comisión Fija", "Costo LAND (USD)"],
+    [],
+    ["Tramos Comisión Fija", "Hasta precio", "Monto"],
+    ...vars.comisionFijaTiers.map((t) => ["", t.precioMax === Infinity ? "∞" : t.precioMax, t.monto]),
+    [],
+    ["SKU", "IVA %", "Comisión %", "Premium", "Costo LAND (USD)"],
     ...Object.values(vars.skuConfigs).map((c) => [
       c.sku,
+      c.ivaPct,
       c.comisionPct,
-      c.comisionFija,
+      c.esPremium ? "Sí" : "No",
       c.costoLandUsd,
     ]),
   ];

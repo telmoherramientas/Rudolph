@@ -1,10 +1,19 @@
-import type { MeliRow, ProcessedRow, Variables } from "@/types";
+import type { MeliRow, ProcessedRow, Variables, ComisionFijaTier } from "@/types";
+
+function calcComisionFija(precioUnitario: number, tiers: ComisionFijaTier[], esPremium: boolean): number {
+  if (esPremium) return 0;
+  const sorted = [...tiers].sort((a, b) => a.precioMax - b.precioMax);
+  for (const tier of sorted) {
+    if (precioUnitario < tier.precioMax) return tier.monto;
+  }
+  return sorted[sorted.length - 1]?.monto ?? 0;
+}
 
 export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
   const skuCfg = vars.skuConfigs[row.sku] || {
     ivaPct: vars.ivaPct,
     comisionPct: 0.145,
-    comisionFija: 0,
+    esPremium: false,
     costoLandUsd: 0,
   };
 
@@ -15,7 +24,7 @@ export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
 
   const comisionPct = skuCfg.comisionPct;
   const comision = facturacionSinIva * comisionPct;
-  const comisionFija = skuCfg.comisionFija;
+  const comisionFija = calcComisionFija(row.precioUnitario, vars.comisionFijaTiers, skuCfg.esPremium);
 
   const tieneCuotas = row.tieneCuotas.toLowerCase() === "sí" || row.tieneCuotas.toLowerCase() === "si";
   const cuotasPct = tieneCuotas ? vars.cuotasPct : 0;

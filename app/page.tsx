@@ -17,6 +17,10 @@ const DEFAULT_VARS: Variables = {
   dycPct: 0.006,
   cuotasPct: 0.08,
   cotizacionBlue: 1200,
+  comisionFijaTiers: [
+    { precioMax: 11999, monto: 743.80 },
+    { precioMax: Infinity, monto: 1487.60 },
+  ],
   skuConfigs: {},
 };
 
@@ -62,7 +66,7 @@ export default function Home() {
             titulo: sample?.titulo || "",
             ivaPct: vars.ivaPct,
             comisionPct: 0.145,
-            comisionFija: 0,
+            esPremium: false,
             costoLandUsd: 0,
           };
           changed = true;

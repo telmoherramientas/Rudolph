@@ -21,12 +21,17 @@ export interface MeliRow {
   tieneCuotas: string;
 }
 
+export interface ComisionFijaTier {
+  precioMax: number;
+  monto: number;
+}
+
 export interface SkuConfig {
   sku: string;
   titulo: string;
   ivaPct: number;
   comisionPct: number;
-  comisionFija: number;
+  esPremium: boolean;
   costoLandUsd: number;
 }
 
@@ -36,6 +41,7 @@ export interface Variables {
   dycPct: number;
   cuotasPct: number;
   cotizacionBlue: number;
+  comisionFijaTiers: ComisionFijaTier[];
   skuConfigs: Record<string, SkuConfig>;
 }
 
