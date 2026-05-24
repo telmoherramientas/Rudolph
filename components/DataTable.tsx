@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import type { ProcessedRow } from "@/types";
 
 interface Props {
@@ -10,16 +11,26 @@ const ars = (n: number) =>
 
 const pct = (n: number) => (n * 100).toFixed(1) + "%";
 
-function Th({ label, tooltip }: { label: string; tooltip: string }) {
+interface TooltipState { text: string; x: number; y: number }
+
+function Th({ label, tooltip, onShow, onHide }: {
+  label: string;
+  tooltip: string;
+  onShow: (t: TooltipState) => void;
+  onHide: () => void;
+}) {
   return (
     <th className="px-3 py-2 font-medium whitespace-nowrap">
-      <div className="relative group inline-flex items-center gap-1 cursor-default">
+      <div
+        className="inline-flex items-center gap-1 cursor-default"
+        onMouseEnter={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          onShow({ text: tooltip, x: r.left + r.width / 2, y: r.bottom });
+        }}
+        onMouseLeave={onHide}
+      >
         <span>{label}</span>
         <span className="text-gray-400 text-xs leading-none">ⓘ</span>
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 hidden group-hover:block z-50 w-52 bg-gray-800 text-white text-xs rounded-lg p-2 shadow-lg pointer-events-none">
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-800" />
-          {tooltip}
-        </div>
       </div>
     </th>
   );
@@ -41,6 +52,8 @@ function Card({ label, value, color = "text-gray-800" }: { label: string; value:
 }
 
 export default function DataTable({ rows }: Props) {
+  const [tip, setTip] = useState<TooltipState | null>(null);
+
   if (rows.length === 0) return <p className="text-gray-400 text-sm p-8 text-center">Sin datos</p>;
 
   const totalSinIva = rows.reduce((s, r) => s + r.facturacionSinIva, 0);
@@ -48,8 +61,22 @@ export default function DataTable({ rows }: Props) {
   const totalMargen = rows.reduce((s, r) => s + r.margen, 0);
   const avgCmg = totalSinIva > 0 ? totalMargen / totalSinIva : 0;
 
+  const th = (label: string, tooltip: string) => (
+    <Th label={label} tooltip={tooltip} onShow={setTip} onHide={() => setTip(null)} />
+  );
+
   return (
     <div className="flex flex-col gap-4">
+      {/* Tooltip portal — position fixed, escapa cualquier overflow */}
+      {tip && (
+        <div
+          className="fixed z-[9999] w-56 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl pointer-events-none"
+          style={{ left: tip.x, top: tip.y + 6, transform: "translateX(-50%)" }}
+        >
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-gray-900" />
+          {tip.text}
+        </div>
+      )}
       {/* Cards resumen */}
       <div className="grid grid-cols-4 gap-3">
         <Card label="Ventas S/IVA" value={`$${ars(totalSinIva)}`} />
@@ -63,27 +90,27 @@ export default function DataTable({ rows }: Props) {
         <table className="min-w-full text-xs">
           <thead>
             <tr className="bg-gray-100 text-gray-800 text-left">
-              <Th label="# Operación" tooltip="ID de la operación en MercadoLibre. Click para abrir el detalle de la venta." />
-              <Th label="Fecha" tooltip="Fecha de la venta según MercadoLibre" />
-              <Th label="SKU" tooltip="Código interno del producto" />
-              <Th label="Título" tooltip="Nombre de la publicación en MercadoLibre" />
-              <Th label="Uds." tooltip="Cantidad de unidades vendidas en esta operación" />
-              <Th label="Fact. C/IVA" tooltip="Ingresos por la venta incluyendo IVA. Es el precio que pagó el comprador." />
-              <Th label="Fact. S/IVA" tooltip="Ingresos netos de IVA. Base de cálculo para comisiones e IIBB." />
-              <Th label="IVA neto" tooltip="IVA débito (cobrado en la venta) menos IVA crédito (IVA sobre comisiones MeLi). Es lo que efectivamente debés a AFIP por IVA en esta operación." />
-              <Th label="Com. %" tooltip="Porcentaje de comisión de MercadoLibre según categoría. Se aplica sobre la Facturación S/IVA." />
-              <Th label="Comisión" tooltip="Monto de la comisión porcentual de MeLi = Fact. S/IVA × Com. %" />
-              <Th label="Com. Fija" tooltip="Cargo fijo de MeLi por operación según el precio unitario de venta. Configurable por tramos en el panel." />
-              <Th label="Cuotas" tooltip="Cargo por ofrecer cuotas sin interés. Solo aplica cuando el comprador pagó en cuotas." />
-              <Th label="Tot. Comis." tooltip="Total de comisiones MeLi = Comisión % + Comisión Fija + Cuotas" />
-              <Th label="IIBB" tooltip="Ingresos Brutos = Fact. S/IVA × tasa IIBB. Impuesto provincial configurable." />
-              <Th label="D&C" tooltip="Débitos y Créditos = Fact. C/IVA × tasa D&C. Impuesto al cheque, se aplica sobre el monto bruto." />
-              <Th label="Envío neto" tooltip="Diferencia entre lo que cobró MeLi al comprador por envío y lo que te descontó a vos. Positivo = beneficio." />
-              <Th label="Tot. Imp." tooltip="Total impuestos = IIBB + D&C − Envío neto. Si el envío te favorece, reduce este total." />
-              <Th label="Costo Land" tooltip="Costo de mercadería = Costo USD por unidad × Cotización Blue × Unidades." />
-              <Th label="Costo Total" tooltip="Suma de todos los costos: Comisiones + Impuestos + Costo de mercadería." />
-              <Th label="Margen" tooltip="Ganancia neta = Facturación S/IVA − Costo Total." />
-              <Th label="CMG %" tooltip="Contribución Marginal Bruta = Margen ÷ Fact. S/IVA. Verde ≥30%, amarillo ≥15%, rojo <15%." />
+              {th("# Operación", "ID de la operación en MercadoLibre. Click para abrir el detalle de la venta.")}
+              {th("Fecha", "Fecha de la venta según MercadoLibre")}
+              {th("SKU", "Código interno del producto")}
+              {th("Título", "Nombre de la publicación en MercadoLibre")}
+              {th("Uds.", "Cantidad de unidades vendidas en esta operación")}
+              {th("Fact. C/IVA", "Ingresos por la venta incluyendo IVA. Es el precio que pagó el comprador.")}
+              {th("Fact. S/IVA", "Ingresos netos de IVA. Base de cálculo para comisiones e IIBB.")}
+              {th("IVA neto", "IVA débito (cobrado en la venta) menos IVA crédito (IVA sobre comisiones MeLi). Lo que le debés a AFIP por IVA en esta operación.")}
+              {th("Com. %", "Porcentaje de comisión de MercadoLibre según categoría. Se aplica sobre la Facturación S/IVA.")}
+              {th("Comisión", "Monto de la comisión porcentual de MeLi = Fact. S/IVA × Com. %")}
+              {th("Com. Fija", "Cargo fijo de MeLi por operación según el precio unitario de venta. Configurable por tramos en el panel.")}
+              {th("Cuotas", "Cargo por ofrecer cuotas sin interés. Solo aplica cuando el comprador pagó en cuotas.")}
+              {th("Tot. Comis.", "Total de comisiones MeLi = Comisión % + Comisión Fija + Cuotas")}
+              {th("IIBB", "Ingresos Brutos = Fact. S/IVA × tasa IIBB. Impuesto provincial configurable.")}
+              {th("D&C", "Débitos y Créditos = Fact. C/IVA × tasa D&C. Impuesto al cheque, se aplica sobre el monto bruto.")}
+              {th("Envío neto", "Diferencia entre lo que cobró MeLi al comprador por envío y lo que te descontó a vos. Positivo = beneficio.")}
+              {th("Tot. Imp.", "Total impuestos = IIBB + D&C − Envío neto. Si el envío te favorece, reduce este total.")}
+              {th("Costo Land", "Costo de mercadería = Costo USD por unidad × Cotización Blue × Unidades.")}
+              {th("Costo Total", "Suma de todos los costos: Comisiones + Impuestos + Costo de mercadería.")}
+              {th("Margen", "Ganancia neta = Facturación S/IVA − Costo Total.")}
+              {th("CMG %", "Contribución Marginal Bruta = Margen ÷ Fact. S/IVA. Verde ≥30%, amarillo ≥15%, rojo <15%.")}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
