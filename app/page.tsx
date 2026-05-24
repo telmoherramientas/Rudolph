@@ -60,6 +60,7 @@ export default function Home() {
           newSkuConfigs[sku] = {
             sku,
             titulo: sample?.titulo || "",
+            ivaPct: vars.ivaPct,
             comisionPct: 0.145,
             comisionFija: 0,
             costoLandUsd: 0,

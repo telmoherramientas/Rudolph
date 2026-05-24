@@ -2,13 +2,15 @@ import type { MeliRow, ProcessedRow, Variables } from "@/types";
 
 export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
   const skuCfg = vars.skuConfigs[row.sku] || {
+    ivaPct: vars.ivaPct,
     comisionPct: 0.145,
     comisionFija: 0,
     costoLandUsd: 0,
   };
 
+  const ivaPct = skuCfg.ivaPct ?? vars.ivaPct;
   const facturacionConIva = row.ingresosPorProductos;
-  const facturacionSinIva = facturacionConIva / (1 + vars.ivaPct);
+  const facturacionSinIva = facturacionConIva / (1 + ivaPct);
   const iva = facturacionConIva - facturacionSinIva;
 
   const comisionPct = skuCfg.comisionPct;

@@ -85,7 +85,8 @@ export default function VariablesPanel({ vars, onChange }: Props) {
           Tasas impositivas
         </h3>
         <div className="space-y-2">
-          <PctInput label="IVA" value={vars.ivaPct} onChange={(v) => set({ ivaPct: v })} />
+          <PctInput label="IVA (default)" value={vars.ivaPct} onChange={(v) => set({ ivaPct: v })} />
+          <p className="text-xs text-gray-400">Podés cambiar IVA por SKU abajo (21% o 10.5%)</p>
           <PctInput label="IIBB" value={vars.iibbPct} onChange={(v) => set({ iibbPct: v })} />
           <PctInput label="D&C" value={vars.dycPct} onChange={(v) => set({ dycPct: v })} />
         </div>
@@ -135,6 +136,24 @@ export default function VariablesPanel({ vars, onChange }: Props) {
                 </p>
                 <p className="text-xs text-gray-400 truncate">{cfg.titulo}</p>
                 <div className="space-y-2 mt-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <label className="text-xs text-gray-600">IVA</label>
+                    <div className="flex gap-1">
+                      {[21, 10.5].map((v) => (
+                        <button
+                          key={v}
+                          onClick={() => setSkuField(cfg.sku, "ivaPct", v / 100)}
+                          className={`px-2 py-0.5 rounded text-xs font-medium border transition-colors ${
+                            Math.abs((cfg.ivaPct ?? vars.ivaPct) * 100 - v) < 0.1
+                              ? "bg-blue-600 text-white border-blue-600"
+                              : "bg-white text-gray-600 border-gray-300 hover:border-blue-400"
+                          }`}
+                        >
+                          {v}%
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <div className="flex items-center justify-between gap-2">
                     <label className="text-xs text-gray-600">Comisión %</label>
                     <div className="flex items-center gap-1">

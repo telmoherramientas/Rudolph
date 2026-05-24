@@ -24,6 +24,7 @@ export interface MeliRow {
 export interface SkuConfig {
   sku: string;
   titulo: string;
+  ivaPct: number;
   comisionPct: number;
   comisionFija: number;
   costoLandUsd: number;
