@@ -126,14 +126,14 @@ export default function DataTable({ rows }: Props) {
                     {r.numeroVenta}
                   </a>
                 </td>
-                <td className="px-3 py-2 text-gray-700 whitespace-nowrap">{r.fechaVenta.split(" ")[0] || "-"}</td>
+                <td className="px-3 py-2 text-gray-900 whitespace-nowrap">{r.fechaVenta.replace(" hs.", "").split(" de ").slice(0,3).join("/") || r.fechaVenta.split(" ")[0] || "-"}</td>
                 <td className="px-3 py-2 font-mono text-blue-700">{r.sku || "-"}</td>
-                <td className="px-3 py-2 max-w-48 truncate text-gray-700" title={r.titulo}>{r.titulo || "-"}</td>
-                <td className="px-3 py-2 text-center">{r.unidades}</td>
-                <td className="px-3 py-2 text-right">${ars(r.facturacionConIva)}</td>
-                <td className="px-3 py-2 text-right font-medium">${ars(r.facturacionSinIva)}</td>
+                <td className="px-3 py-2 max-w-48 truncate text-gray-900" title={r.titulo}>{r.titulo || "-"}</td>
+                <td className="px-3 py-2 text-center text-gray-900 font-medium">{r.unidades}</td>
+                <td className="px-3 py-2 text-right text-gray-900">${ars(r.facturacionConIva)}</td>
+                <td className="px-3 py-2 text-right text-gray-900 font-medium">${ars(r.facturacionSinIva)}</td>
                 <td className="px-3 py-2 text-right text-orange-600 font-medium">${ars(r.ivaNeto)}</td>
-                <td className="px-3 py-2 text-right text-gray-700">{pct(r.comisionPct)}</td>
+                <td className="px-3 py-2 text-right text-gray-900">{pct(r.comisionPct)}</td>
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comision)}</td>
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comisionFija)}</td>
                 <td className="px-3 py-2 text-right text-red-500">{r.cuotas > 0 ? `-$${ars(r.cuotas)}` : "-"}</td>
