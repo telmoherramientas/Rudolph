@@ -97,7 +97,9 @@ export default function DataTable({ rows }: Props) {
               {th("Uds.", "Cantidad de unidades vendidas en esta operación")}
               {th("Fact. C/IVA", "Ingresos por la venta incluyendo IVA. Es el precio que pagó el comprador.")}
               {th("Fact. S/IVA", "Ingresos netos de IVA. Base de cálculo para comisiones e IIBB.")}
-              {th("IVA neto", "IVA débito (cobrado en la venta) menos IVA crédito (IVA sobre comisiones MeLi). Lo que le debés a AFIP por IVA en esta operación.")}
+              {th("IVA Débito", "IVA cargado en la venta = Fact. C/IVA − Fact. S/IVA. Es el IVA que le cobraste al comprador.")}
+              {th("IVA Crédito", "IVA que pagaste sobre las comisiones de MeLi = Total Comisiones × tasa IVA. Es el IVA que podés computar como crédito fiscal.")}
+              {th("Saldo IVA", "IVA neto que le debés a AFIP por esta operación = IVA Débito − IVA Crédito.")}
               {th("Com. %", "Porcentaje de comisión de MercadoLibre según categoría. Se aplica sobre la Facturación S/IVA.")}
               {th("Comisión", "Monto de la comisión porcentual de MeLi = Fact. S/IVA × Com. %")}
               {th("Com. Fija", "Cargo fijo de MeLi por operación según el precio unitario de venta. Configurable por tramos en el panel.")}
@@ -132,7 +134,9 @@ export default function DataTable({ rows }: Props) {
                 <td className="px-3 py-2 text-center text-gray-900 font-medium">{r.unidades}</td>
                 <td className="px-3 py-2 text-right text-gray-900">${ars(r.facturacionConIva)}</td>
                 <td className="px-3 py-2 text-right text-gray-900 font-medium">${ars(r.facturacionSinIva)}</td>
-                <td className="px-3 py-2 text-right text-orange-600 font-medium">${ars(r.ivaNeto)}</td>
+                <td className="px-3 py-2 text-right text-blue-700 font-medium">${ars(r.iva)}</td>
+                <td className="px-3 py-2 text-right text-green-600">-${ars(r.ivaCredito)}</td>
+                <td className="px-3 py-2 text-right text-orange-600 font-medium">${ars(r.saldoIva)}</td>
                 <td className="px-3 py-2 text-right text-gray-900">{pct(r.comisionPct)}</td>
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comision)}</td>
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comisionFija)}</td>
