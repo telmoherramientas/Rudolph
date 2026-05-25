@@ -24,7 +24,9 @@ export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
 
   const comisionPct = skuCfg.comisionPct;
   const comision = facturacionConIva * comisionPct;
-  const comisionFija = calcComisionFija(row.precioUnitario, vars.comisionFijaTiers, skuCfg.esPremium);
+  // comisionFija: monto por unidad (el panel lo configura con IVA incluido)
+  const comisionFijaUnitaria = calcComisionFija(row.precioUnitario, vars.comisionFijaTiers, skuCfg.esPremium);
+  const comisionFija = comisionFijaUnitaria * row.unidades;
 
   const tieneCuotas = row.tieneCuotas.toLowerCase() === "sí" || row.tieneCuotas.toLowerCase() === "si";
   const cuotasPct = tieneCuotas ? vars.cuotasPct : 0;
@@ -32,8 +34,11 @@ export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
 
   const totalComisiones = comision + comisionFija + cuotas;
 
-  // IVA: débito fiscal (sobre la venta) - crédito fiscal (IVA sobre comisiones MeLi)
-  const ivaCredito = totalComisiones * ivaPct;
+  // IVA crédito: comision % y cuotas son importes netos (IVA encima),
+  // comisionFija ya tiene IVA incluido → se extrae con fija * ivaPct / (1 + ivaPct)
+  const ivaCredito =
+    (comision + cuotas) * ivaPct +
+    comisionFija * ivaPct / (1 + ivaPct);
   const saldoIva = iva - ivaCredito;
 
   const iibb = facturacionSinIva * vars.iibbPct;
@@ -52,6 +57,7 @@ export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
     ...row,
     facturacionConIva,
     facturacionSinIva,
+    ivaPct,
     iva,
     ivaCredito,
     saldoIva,

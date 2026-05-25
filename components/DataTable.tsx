@@ -92,7 +92,7 @@ export default function DataTable({ rows }: Props) {
           <thead>
             {/* Sección headers */}
             <tr className="text-center text-xs font-semibold uppercase tracking-wide">
-              <th colSpan={7} className="px-3 py-1.5 bg-gray-200 text-gray-700 border-r-2 border-gray-400">
+              <th colSpan={8} className="px-3 py-1.5 bg-gray-200 text-gray-700 border-r-2 border-gray-400">
                 Operación
               </th>
               <th colSpan={6} className="px-3 py-1.5 bg-yellow-100 text-yellow-800 border-r-2 border-yellow-400">
@@ -115,6 +115,7 @@ export default function DataTable({ rows }: Props) {
               {th("Uds.", "Cantidad de unidades vendidas en esta operación.")}
               {th("Fact. C/IVA", "Ingresos por la venta incluyendo IVA. Es el precio que pagó el comprador.")}
               {th("Fact. S/IVA", "Ingresos netos de IVA. Base de cálculo para IIBB y otras métricas.")}
+              {th("Alíc. IVA", "Alícuota de IVA aplicada a este producto según configuración por SKU (21% o 10.5%).")}
               {/* — MercadoLibre — */}
               {th("Com. %", "Porcentaje de comisión de MercadoLibre según categoría. Se aplica sobre Fact. C/IVA.")}
               {th("Comisión", "Comisión porcentual de MeLi = Fact. C/IVA × Com. %")}
@@ -157,7 +158,8 @@ export default function DataTable({ rows }: Props) {
                 <td className="px-3 py-2 max-w-48 truncate text-gray-900" title={r.titulo}>{r.titulo || "-"}</td>
                 <td className="px-3 py-2 text-center text-gray-900 font-medium">{r.unidades}</td>
                 <td className="px-3 py-2 text-right text-gray-900">${ars(r.facturacionConIva)}</td>
-                <td className="px-3 py-2 text-right text-gray-900 font-medium border-r-2 border-gray-300">${ars(r.facturacionSinIva)}</td>
+                <td className="px-3 py-2 text-right text-gray-900 font-medium">${ars(r.facturacionSinIva)}</td>
+                <td className="px-3 py-2 text-right text-gray-500 border-r-2 border-gray-300">{pct(r.ivaPct)}</td>
                 {/* — MercadoLibre — */}
                 <td className="px-3 py-2 text-right text-gray-900">{pct(r.comisionPct)}</td>
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comision)}</td>

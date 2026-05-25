@@ -48,6 +48,7 @@ export interface Variables {
 export interface ProcessedRow extends MeliRow {
   facturacionConIva: number;
   facturacionSinIva: number;
+  ivaPct: number;
   iva: number;
   ivaCredito: number;
   saldoIva: number;
