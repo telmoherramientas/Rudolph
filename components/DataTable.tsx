@@ -113,7 +113,7 @@ export default function DataTable({ rows }: Props) {
               {th("CMG %", "Contribución Marginal Bruta = Margen ÷ Fact. S/IVA. Verde ≥30%, amarillo ≥15%, rojo <15%.")}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 text-gray-900">
             {rows.map((r, i) => (
               <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                 <td className="px-3 py-2 whitespace-nowrap">
