@@ -77,6 +77,7 @@ export default function DataTable({ rows }: Props) {
           {tip.text}
         </div>
       )}
+
       {/* Cards resumen */}
       <div className="grid grid-cols-4 gap-3">
         <Card label="Ventas S/IVA" value={`$${ars(totalSinIva)}`} />
@@ -89,27 +90,47 @@ export default function DataTable({ rows }: Props) {
       <div className="overflow-x-auto rounded-lg border border-gray-200">
         <table className="min-w-full text-xs">
           <thead>
+            {/* Sección headers */}
+            <tr className="text-center text-xs font-semibold uppercase tracking-wide">
+              <th colSpan={7} className="px-3 py-1.5 bg-gray-200 text-gray-700 border-r-2 border-gray-400">
+                Operación
+              </th>
+              <th colSpan={6} className="px-3 py-1.5 bg-yellow-100 text-yellow-800 border-r-2 border-yellow-400">
+                MercadoLibre
+              </th>
+              <th colSpan={6} className="px-3 py-1.5 bg-orange-100 text-orange-800 border-r-2 border-orange-400">
+                Impuestos
+              </th>
+              <th colSpan={4} className="px-3 py-1.5 bg-blue-100 text-blue-800">
+                Producto
+              </th>
+            </tr>
+            {/* Columnas */}
             <tr className="bg-gray-100 text-gray-800 text-left">
+              {/* — Operación — */}
               {th("# Operación", "ID de la operación en MercadoLibre. Click para abrir el detalle de la venta.")}
-              {th("Fecha", "Fecha de la venta según MercadoLibre")}
-              {th("SKU", "Código interno del producto")}
-              {th("Título", "Nombre de la publicación en MercadoLibre")}
-              {th("Uds.", "Cantidad de unidades vendidas en esta operación")}
+              {th("Fecha", "Fecha de la venta según MercadoLibre.")}
+              {th("SKU", "Código interno del producto.")}
+              {th("Título", "Nombre de la publicación en MercadoLibre.")}
+              {th("Uds.", "Cantidad de unidades vendidas en esta operación.")}
               {th("Fact. C/IVA", "Ingresos por la venta incluyendo IVA. Es el precio que pagó el comprador.")}
-              {th("Fact. S/IVA", "Ingresos netos de IVA. Base de cálculo para comisiones e IIBB.")}
-              {th("IVA Débito", "IVA cargado en la venta = Fact. C/IVA − Fact. S/IVA. Es el IVA que le cobraste al comprador.")}
-              {th("IVA Crédito", "IVA que pagaste sobre las comisiones de MeLi = Total Comisiones × tasa IVA. Es el IVA que podés computar como crédito fiscal.")}
-              {th("Saldo IVA", "IVA neto que le debés a AFIP por esta operación = IVA Débito − IVA Crédito.")}
-              {th("Com. %", "Porcentaje de comisión de MercadoLibre según categoría. Se aplica sobre la Facturación S/IVA.")}
-              {th("Comisión", "Monto de la comisión porcentual de MeLi = Fact. S/IVA × Com. %")}
-              {th("Com. Fija", "Cargo fijo de MeLi por operación según el precio unitario de venta. Configurable por tramos en el panel.")}
+              {th("Fact. S/IVA", "Ingresos netos de IVA. Base de cálculo para IIBB y otras métricas.")}
+              {/* — MercadoLibre — */}
+              {th("Com. %", "Porcentaje de comisión de MercadoLibre según categoría. Se aplica sobre Fact. C/IVA.")}
+              {th("Comisión", "Comisión porcentual de MeLi = Fact. C/IVA × Com. %")}
+              {th("Com. Fija", "Cargo fijo de MeLi por operación según precio unitario. Configurable por tramos en el panel.")}
               {th("Cuotas", "Cargo por ofrecer cuotas sin interés. Solo aplica cuando el comprador pagó en cuotas.")}
-              {th("Tot. Comis.", "Total de comisiones MeLi = Comisión % + Comisión Fija + Cuotas")}
-              {th("IIBB", "Ingresos Brutos = Fact. S/IVA × tasa IIBB. Impuesto provincial configurable.")}
-              {th("D&C", "Débitos y Créditos = Fact. C/IVA × tasa D&C. Impuesto al cheque, se aplica sobre el monto bruto.")}
+              {th("Tot. Comis.", "Total comisiones MeLi = Comisión % + Comisión Fija + Cuotas.")}
               {th("Envío neto", "Diferencia entre lo que cobró MeLi al comprador por envío y lo que te descontó a vos. Positivo = beneficio.")}
-              {th("Tot. Imp.", "Total impuestos = IIBB + D&C − Envío neto. Si el envío te favorece, reduce este total.")}
-              {th("Costo Land", "Costo de mercadería = Costo USD por unidad × Cotización Blue × Unidades.")}
+              {/* — Impuestos — */}
+              {th("IVA Débito", "IVA cargado en la venta = Fact. C/IVA − Fact. S/IVA. Es el IVA que le cobraste al comprador.")}
+              {th("IVA Crédito", "IVA sobre las comisiones de MeLi que podés computar como crédito fiscal = Total Comisiones × tasa IVA.")}
+              {th("Saldo IVA", "IVA neto que le debés a AFIP = IVA Débito − IVA Crédito.")}
+              {th("IIBB", "Ingresos Brutos = Fact. S/IVA × tasa IIBB. Impuesto provincial configurable.")}
+              {th("D&C", "Débitos y Créditos = Fact. C/IVA × tasa D&C. Impuesto al cheque sobre el monto bruto.")}
+              {th("Tot. Imp.", "Total impuestos netos = IIBB + D&C − Envío neto. Si el envío te favorece, reduce este total.")}
+              {/* — Producto — */}
+              {th("Costo Merc.", "Costo de mercadería = Costo USD por unidad × Cotización Blue × Unidades.")}
               {th("Costo Total", "Suma de todos los costos: Comisiones + Impuestos + Costo de mercadería.")}
               {th("Margen", "Ganancia neta = Facturación S/IVA − Costo Total.")}
               {th("CMG %", "Contribución Marginal Bruta = Margen ÷ Fact. S/IVA. Verde ≥30%, amarillo ≥15%, rojo <15%.")}
@@ -118,6 +139,7 @@ export default function DataTable({ rows }: Props) {
           <tbody className="divide-y divide-gray-100 text-gray-900">
             {rows.map((r, i) => (
               <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                {/* — Operación — */}
                 <td className="px-3 py-2 whitespace-nowrap">
                   <a
                     href={`https://www.mercadolibre.com.ar/ventas/${r.numeroVenta}`}
@@ -128,28 +150,33 @@ export default function DataTable({ rows }: Props) {
                     {r.numeroVenta}
                   </a>
                 </td>
-                <td className="px-3 py-2 text-gray-900 whitespace-nowrap">{r.fechaVenta.replace(" hs.", "").split(" de ").slice(0,3).join("/") || r.fechaVenta.split(" ")[0] || "-"}</td>
+                <td className="px-3 py-2 text-gray-900 whitespace-nowrap">
+                  {r.fechaVenta.replace(" hs.", "").split(" de ").slice(0, 3).join("/") || r.fechaVenta.split(" ")[0] || "-"}
+                </td>
                 <td className="px-3 py-2 font-mono text-blue-700">{r.sku || "-"}</td>
                 <td className="px-3 py-2 max-w-48 truncate text-gray-900" title={r.titulo}>{r.titulo || "-"}</td>
                 <td className="px-3 py-2 text-center text-gray-900 font-medium">{r.unidades}</td>
                 <td className="px-3 py-2 text-right text-gray-900">${ars(r.facturacionConIva)}</td>
-                <td className="px-3 py-2 text-right text-gray-900 font-medium">${ars(r.facturacionSinIva)}</td>
-                <td className="px-3 py-2 text-right text-blue-700 font-medium">${ars(r.iva)}</td>
-                <td className="px-3 py-2 text-right text-green-600">-${ars(r.ivaCredito)}</td>
-                <td className="px-3 py-2 text-right text-orange-600 font-medium">${ars(r.saldoIva)}</td>
+                <td className="px-3 py-2 text-right text-gray-900 font-medium border-r-2 border-gray-300">${ars(r.facturacionSinIva)}</td>
+                {/* — MercadoLibre — */}
                 <td className="px-3 py-2 text-right text-gray-900">{pct(r.comisionPct)}</td>
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comision)}</td>
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comisionFija)}</td>
                 <td className="px-3 py-2 text-right text-red-500">{r.cuotas > 0 ? `-$${ars(r.cuotas)}` : "-"}</td>
                 <td className="px-3 py-2 text-right text-red-600 font-medium">-${ars(r.totalComisiones)}</td>
-                <td className="px-3 py-2 text-right text-red-500">-${ars(r.iibb)}</td>
-                <td className="px-3 py-2 text-right text-red-500">-${ars(r.dyc)}</td>
-                <td className={`px-3 py-2 text-right ${r.envioNeto >= 0 ? "text-green-600" : "text-red-500"}`}>
+                <td className={`px-3 py-2 text-right border-r-2 border-yellow-300 ${r.envioNeto >= 0 ? "text-green-600" : "text-red-500"}`}>
                   {r.envioNeto >= 0 ? "+" : "-"}${ars(Math.abs(r.envioNeto))}
                 </td>
-                <td className={`px-3 py-2 text-right font-medium ${r.totalImpuestos >= 0 ? "text-red-600" : "text-green-600"}`}>
+                {/* — Impuestos — */}
+                <td className="px-3 py-2 text-right text-blue-700 font-medium">${ars(r.iva)}</td>
+                <td className="px-3 py-2 text-right text-green-600">-${ars(r.ivaCredito)}</td>
+                <td className="px-3 py-2 text-right text-orange-600 font-medium">${ars(r.saldoIva)}</td>
+                <td className="px-3 py-2 text-right text-red-500">-${ars(r.iibb)}</td>
+                <td className="px-3 py-2 text-right text-red-500">-${ars(r.dyc)}</td>
+                <td className={`px-3 py-2 text-right font-medium border-r-2 border-orange-300 ${r.totalImpuestos >= 0 ? "text-red-600" : "text-green-600"}`}>
                   {r.totalImpuestos >= 0 ? "-" : "+"}${ars(Math.abs(r.totalImpuestos))}
                 </td>
+                {/* — Producto — */}
                 <td className="px-3 py-2 text-right text-red-500">{r.costoLandTotal > 0 ? `-$${ars(r.costoLandTotal)}` : "-"}</td>
                 <td className="px-3 py-2 text-right text-red-700 font-semibold">-${ars(r.costoTotal)}</td>
                 <td className={`px-3 py-2 text-right font-semibold ${r.margen >= 0 ? "text-green-700" : "text-red-700"}`}>${ars(r.margen)}</td>
