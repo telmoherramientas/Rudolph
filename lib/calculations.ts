@@ -36,7 +36,7 @@ export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
   const ivaCredito = totalComisiones * ivaPct;
   const saldoIva = iva - ivaCredito;
 
-  const iibb = facturacionConIva * vars.iibbPct;
+  const iibb = facturacionSinIva * vars.iibbPct;
   const dyc = facturacionConIva * vars.dycPct;
   const envioNeto = row.ingresoEnvio + row.costoEnvio;
   const totalImpuestos = iibb + dyc - envioNeto;
