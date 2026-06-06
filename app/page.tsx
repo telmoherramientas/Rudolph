@@ -5,6 +5,7 @@ import FileUpload from "@/components/FileUpload";
 import VariablesPanel from "@/components/VariablesPanel";
 import DataTable from "@/components/DataTable";
 import { parseExcel, extractSkus } from "@/lib/parseExcel";
+import { parseProductsExcel } from "@/lib/parseProductsExcel";
 import { processRows } from "@/lib/calculations";
 import { exportToExcel } from "@/lib/exportExcel";
 import type { MeliRow, Variables } from "@/types";
@@ -81,6 +82,35 @@ export default function Home() {
     [vars, handleVarsChange]
   );
 
+  const handleSkuImport = useCallback(
+    (buffer: ArrayBuffer) => {
+      const products = parseProductsExcel(buffer);
+      if (products.length === 0) return;
+      const newSkuConfigs = { ...vars.skuConfigs };
+      products.forEach((p) => {
+        if (newSkuConfigs[p.sku]) {
+          newSkuConfigs[p.sku] = {
+            ...newSkuConfigs[p.sku],
+            costoLandUsd: p.costoLandUsd,
+            ...(p.comisionPct > 0 && { comisionPct: p.comisionPct }),
+            ...(p.titulo && { titulo: p.titulo }),
+          };
+        } else {
+          newSkuConfigs[p.sku] = {
+            sku: p.sku,
+            titulo: p.titulo,
+            ivaPct: vars.ivaPct,
+            comisionPct: p.comisionPct > 0 ? p.comisionPct : 0.145,
+            esPremium: false,
+            costoLandUsd: p.costoLandUsd,
+          };
+        }
+      });
+      handleVarsChange({ ...vars, skuConfigs: newSkuConfigs });
+    },
+    [vars, handleVarsChange]
+  );
+
   const handleFlexCostChange = useCallback(
     (numeroVenta: string, cost: number) => {
       handleVarsChange({ ...vars, flexCosts: { ...vars.flexCosts, [numeroVenta]: cost } });
@@ -129,7 +159,7 @@ export default function Home() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        <VariablesPanel vars={vars} onChange={handleVarsChange} />
+        <VariablesPanel vars={vars} onChange={handleVarsChange} onSkuImport={handleSkuImport} />
 
         <main className="flex-1 overflow-y-auto p-6 bg-white">
           {rows.length === 0 ? (
