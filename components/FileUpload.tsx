@@ -15,8 +15,10 @@ export default function FileUpload({ onFile }: Props) {
 
   return (
     <div
-      className={`flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-16 cursor-pointer transition-colors ${
-        dragging ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-gray-50 hover:border-blue-400"
+      className={`flex flex-col items-center justify-center border-2 border-dashed p-16 cursor-pointer transition-colors ${
+        dragging
+          ? "border-black bg-zinc-50"
+          : "border-zinc-300 bg-white hover:border-zinc-600 hover:bg-zinc-50/50"
       }`}
       onClick={() => inputRef.current?.click()}
       onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
@@ -28,10 +30,22 @@ export default function FileUpload({ onFile }: Props) {
         if (f) handle(f);
       }}
     >
-      <div className="text-5xl mb-4">📊</div>
-      <p className="text-lg font-semibold text-gray-700">Subir Excel de MercadoLibre</p>
-      <p className="text-sm text-gray-500 mt-2">Arrastrá el archivo o hacé click para seleccionar</p>
-      <p className="text-xs text-gray-400 mt-1">.xlsx · Reporte de ventas sin modificar</p>
+      <svg
+        className={`w-8 h-8 mb-5 transition-colors ${dragging ? "text-black" : "text-zinc-300"}`}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.5}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+      </svg>
+      <p className="text-sm font-black uppercase tracking-[0.14em] text-black">
+        Subir reporte
+      </p>
+      <p className="text-xs text-zinc-500 mt-2">
+        MercadoLibre · arrastrá o hacé click
+      </p>
+      <p className="text-[10px] text-zinc-400 mt-1">.xlsx sin modificar</p>
       <input
         ref={inputRef}
         type="file"

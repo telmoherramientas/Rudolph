@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CMG Calculator — MercadoLibre",
+  title: "Rudolph · CMG MercadoLibre",
   description: "Calculá el CMG de tus ventas en MercadoLibre",
 };
 
