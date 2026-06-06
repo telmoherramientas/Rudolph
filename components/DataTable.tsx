@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
-import type { ProcessedRow } from "@/types";
+import type { ProcessedRow, Variables } from "@/types";
 
 interface Props {
   rows: ProcessedRow[];
+  vars: Variables;
+  onFlexCostChange: (numeroVenta: string, cost: number) => void;
 }
 
 const ars = (n: number) =>
@@ -51,7 +53,7 @@ function Card({ label, value, color = "text-gray-800" }: { label: string; value:
   );
 }
 
-export default function DataTable({ rows }: Props) {
+export default function DataTable({ rows, vars, onFlexCostChange }: Props) {
   const [tip, setTip] = useState<TooltipState | null>(null);
 
   if (rows.length === 0) return <p className="text-gray-400 text-sm p-8 text-center">Sin datos</p>;
@@ -95,7 +97,7 @@ export default function DataTable({ rows }: Props) {
               <th colSpan={8} className="px-3 py-1.5 bg-gray-200 text-gray-700 border-r-2 border-gray-400">
                 Operación
               </th>
-              <th colSpan={6} className="px-3 py-1.5 bg-yellow-100 text-yellow-800 border-r-2 border-yellow-400">
+              <th colSpan={7} className="px-3 py-1.5 bg-yellow-100 text-yellow-800 border-r-2 border-yellow-400">
                 MercadoLibre
               </th>
               <th colSpan={6} className="px-3 py-1.5 bg-orange-100 text-orange-800 border-r-2 border-orange-400">
@@ -123,6 +125,7 @@ export default function DataTable({ rows }: Props) {
               {th("Cuotas", "Cargo por ofrecer cuotas sin interés. Solo aplica cuando el comprador pagó en cuotas.")}
               {th("Tot. Comis.", "Total comisiones MeLi = Comisión % + Comisión Fija + Cuotas.")}
               {th("Envío neto", "Diferencia entre lo que cobró MeLi al comprador por envío y lo que te descontó a vos. Positivo = beneficio.")}
+              {th("Costo Flex", vars.costoEnvioFlexUniversal > 0 ? `Costo de entrega Flex universal ($${vars.costoEnvioFlexUniversal} C/IVA). Se descuenta del margen.` : "Costo de entrega Flex (C/IVA). Solo para filas con ingreso de envío. Editá por operación o configurá un valor universal en el panel.")}
               {/* — Impuestos — */}
               {th("IVA Débito", "IVA cargado en la venta = Fact. C/IVA − Fact. S/IVA. Es el IVA que le cobraste al comprador.")}
               {th("IVA Crédito", "IVA sobre las comisiones de MeLi que podés computar como crédito fiscal = Total Comisiones × tasa IVA.")}
@@ -166,8 +169,26 @@ export default function DataTable({ rows }: Props) {
                 <td className="px-3 py-2 text-right text-red-500">-${ars(r.comisionFija)}</td>
                 <td className="px-3 py-2 text-right text-red-500">{r.cuotas > 0 ? `-$${ars(r.cuotas)}` : "-"}</td>
                 <td className="px-3 py-2 text-right text-red-600 font-medium">-${ars(r.totalComisiones)}</td>
-                <td className={`px-3 py-2 text-right border-r-2 border-yellow-300 ${r.envioNeto >= 0 ? "text-green-600" : "text-red-500"}`}>
+                <td className={`px-3 py-2 text-right ${r.envioNeto >= 0 ? "text-green-600" : "text-red-500"}`}>
                   {r.envioNeto >= 0 ? "+" : "-"}${ars(Math.abs(r.envioNeto))}
+                </td>
+                <td className="px-3 py-2 text-right border-r-2 border-yellow-300">
+                  {r.ingresoEnvio > 0 ? (
+                    vars.costoEnvioFlexUniversal > 0 ? (
+                      <span className="text-red-500">-${ars(vars.costoEnvioFlexUniversal)}</span>
+                    ) : (
+                      <input
+                        key={r.numeroVenta}
+                        type="number"
+                        className="w-24 text-right border border-gray-300 rounded px-1 py-0.5 text-xs text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        defaultValue={vars.flexCosts?.[r.numeroVenta] || ""}
+                        placeholder="$0"
+                        onBlur={(e) => onFlexCostChange(r.numeroVenta, parseFloat(e.target.value) || 0)}
+                      />
+                    )
+                  ) : (
+                    <span className="text-gray-300">-</span>
+                  )}
                 </td>
                 {/* — Impuestos — */}
                 <td className="px-3 py-2 text-right text-blue-700 font-medium">${ars(r.iva)}</td>

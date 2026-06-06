@@ -164,6 +164,18 @@ export default function VariablesPanel({ vars, onChange }: Props) {
         <p className="text-xs text-gray-400 mt-2">Para convertir el costo de producto en USD a ARS</p>
       </section>
 
+      {/* Envío Flex */}
+      <section className="px-4 py-4 border-b border-gray-100">
+        <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Envío Flex</h3>
+        <p className="text-xs text-gray-400 mb-3">Costo de entrega (C/IVA) para envíos Flex. Si está vacío, se carga por operación en la tabla.</p>
+        <NumInput
+          label="Costo universal"
+          value={vars.costoEnvioFlexUniversal}
+          onChange={(v) => set({ costoEnvioFlexUniversal: v })}
+          prefix="$"
+        />
+      </section>
+
       {/* Productos — importar desde Excel */}
       <section className="px-4 py-4 flex-1">
         <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Productos</h3>

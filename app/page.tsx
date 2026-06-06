@@ -22,6 +22,8 @@ const DEFAULT_VARS: Variables = {
     { precioMax: Infinity, monto: 1487.60 },
   ],
   skuConfigs: {},
+  costoEnvioFlexUniversal: 0,
+  flexCosts: {},
 };
 
 function loadVars(): Variables {
@@ -75,6 +77,13 @@ export default function Home() {
       if (changed) {
         handleVarsChange({ ...vars, skuConfigs: newSkuConfigs });
       }
+    },
+    [vars, handleVarsChange]
+  );
+
+  const handleFlexCostChange = useCallback(
+    (numeroVenta: string, cost: number) => {
+      handleVarsChange({ ...vars, flexCosts: { ...vars.flexCosts, [numeroVenta]: cost } });
     },
     [vars, handleVarsChange]
   );
@@ -133,7 +142,7 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            <DataTable rows={processed} />
+            <DataTable rows={processed} vars={vars} onFlexCostChange={handleFlexCostChange} />
           )}
         </main>
       </div>

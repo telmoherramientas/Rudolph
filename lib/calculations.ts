@@ -34,11 +34,25 @@ export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
 
   const totalComisiones = comision + comisionFija + cuotas;
 
+  // Costo envío Flex (solo para filas con ingresos de envío):
+  // universal si está configurado, sino por operación desde vars.flexCosts
+  let costoEnvioFlexConIva = 0;
+  if (row.ingresoEnvio > 0) {
+    if (vars.costoEnvioFlexUniversal > 0) {
+      costoEnvioFlexConIva = vars.costoEnvioFlexUniversal;
+    } else {
+      costoEnvioFlexConIva = vars.flexCosts?.[row.numeroVenta] || 0;
+    }
+  }
+  const costoEnvioFlexSinIva = costoEnvioFlexConIva > 0 ? costoEnvioFlexConIva / (1 + ivaPct) : 0;
+  const ivaCreditoFlex = costoEnvioFlexConIva * ivaPct / (1 + ivaPct);
+
   // IVA crédito: comision % y cuotas son importes netos (IVA encima),
   // comisionFija ya tiene IVA incluido → se extrae con fija * ivaPct / (1 + ivaPct)
   const ivaCredito =
     (comision + cuotas) * ivaPct +
-    comisionFija * ivaPct / (1 + ivaPct);
+    comisionFija * ivaPct / (1 + ivaPct) +
+    ivaCreditoFlex;
   const saldoIva = iva - ivaCredito;
 
   const iibb = facturacionSinIva * vars.iibbPct;
@@ -49,7 +63,7 @@ export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
   const costoLandInd = skuCfg.costoLandUsd;
   const costoLandTotal = costoLandInd * vars.cotizacionBlue * row.unidades;
 
-  const costoTotal = totalComisiones + totalImpuestos + costoLandTotal;
+  const costoTotal = totalComisiones + totalImpuestos + costoLandTotal + costoEnvioFlexSinIva;
   const margen = facturacionSinIva - costoTotal;
   const cmgPct = facturacionSinIva !== 0 ? margen / facturacionSinIva : 0;
 
@@ -73,6 +87,7 @@ export function calculateRow(row: MeliRow, vars: Variables): ProcessedRow {
     totalImpuestos,
     costoLandInd,
     costoLandTotal,
+    costoEnvioFlexConIva,
     costoTotal,
     margen,
     cmgPct,

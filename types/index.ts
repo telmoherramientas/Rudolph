@@ -43,6 +43,8 @@ export interface Variables {
   cotizacionBlue: number;
   comisionFijaTiers: ComisionFijaTier[];
   skuConfigs: Record<string, SkuConfig>;
+  costoEnvioFlexUniversal: number;
+  flexCosts: Record<string, number>;
 }
 
 export interface ProcessedRow extends MeliRow {
@@ -64,6 +66,7 @@ export interface ProcessedRow extends MeliRow {
   totalImpuestos: number;
   costoLandInd: number;
   costoLandTotal: number;
+  costoEnvioFlexConIva: number;
   costoTotal: number;
   margen: number;
   cmgPct: number;
