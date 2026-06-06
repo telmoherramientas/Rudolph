@@ -86,10 +86,9 @@ export function parseExcel(buffer: ArrayBuffer): MeliRow[] {
     const isPackageParent =
       estado.toLowerCase().includes("paquete de") && !sku && !ingresoNull;
 
-    // Package sub-row: "Paquete de varios" = Sí AND ingresos is null (not present)
-    // A row with "Paquete de varios" = Sí but WITH ingresos is a regular bundle row (same SKU, N units)
-    const isPackageSubRow =
-      paquete.toLowerCase() === "sí" && ingresoNull;
+    // Package sub-row: "Paquete de varios" has any value AND ingresos is null.
+    // A row with "Paquete de varios" non-empty but WITH ingresos is a regular bundle (same SKU, N units).
+    const isPackageSubRow = paquete.length > 0 && ingresoNull;
 
     if (unidades === 0 && !isPackageParent) continue;
 
