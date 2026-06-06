@@ -19,6 +19,16 @@ function s(v: unknown): string {
   return v == null ? "" : String(v).trim();
 }
 
+function nullish(v: unknown): boolean {
+  return v == null || (typeof v === "number" && isNaN(v as number));
+}
+
+interface RawEntry {
+  row: MeliRow;
+  isPackageParent: boolean;
+  isPackageSubRow: boolean;
+}
+
 export function parseExcel(buffer: ArrayBuffer): MeliRow[] {
   const wb = XLSX.read(buffer, { type: "array" });
   const ws = wb.Sheets[wb.SheetNames[0]];
@@ -32,7 +42,6 @@ export function parseExcel(buffer: ArrayBuffer): MeliRow[] {
   const headers = (rows[0] as unknown[]).map((h) => s(h));
 
   const col = (name: string) => {
-    // Support partial/fuzzy match
     const idx = headers.findIndex(
       (h) => h && h.toLowerCase().includes(name.toLowerCase())
     );
@@ -60,38 +69,109 @@ export function parseExcel(buffer: ArrayBuffer): MeliRow[] {
   const iPrecio = col("Precio unitario");
   const iCuotas = col("Tiene cuotas");
 
-  const result: MeliRow[] = [];
+  const entries: RawEntry[] = [];
 
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i] as unknown[];
     const numVenta = s(r[iNumVenta]);
     if (!numVenta || numVenta === "# de venta") continue;
-    // Skip paquete parent rows with no SKU-level data if they're summary rows
-    const unidades = n(r[iUnidades]);
-    if (unidades === 0) continue;
 
-    result.push({
-      numeroVenta: numVenta,
-      fechaVenta: s(r[iFecha]),
-      estado: s(r[iEstado]),
-      descripcionEstado: s(r[iDescEstado]),
-      paquete: s(r[iPaquete]),
-      perteneceKit: s(r[iKit]),
-      unidades,
-      ingresosPorProductos: n(r[iIngresos]),
-      ingresoEnvio: n(r[iIngresoEnvio]),
-      costoEnvio: n(r[iCostoEnvio]),
-      anulaciones: n(r[iAnulaciones]),
-      total: n(r[iTotal]),
-      mesFacturacion: s(r[iMes]),
-      ventaPublicidad: s(r[iPublicidad]),
-      sku: s(r[iSku]),
-      publicacion: s(r[iPub]),
-      titulo: s(r[iTitulo]),
-      variante: s(r[iVariante]),
-      precioUnitario: n(r[iPrecio]),
-      tieneCuotas: s(r[iCuotas]),
+    const unidades = n(r[iUnidades]);
+    const sku = s(r[iSku]);
+    const estado = s(r[iEstado]);
+    const paquete = s(r[iPaquete]);
+    const ingresoNull = nullish(r[iIngresos]);
+
+    // Package parent: Estado = "Paquete de N productos", no SKU, has revenue
+    const isPackageParent =
+      estado.toLowerCase().includes("paquete de") && !sku && !ingresoNull;
+
+    // Package sub-row: "Paquete de varios" = Sí AND ingresos is null (not present)
+    // A row with "Paquete de varios" = Sí but WITH ingresos is a regular bundle row (same SKU, N units)
+    const isPackageSubRow =
+      paquete.toLowerCase() === "sí" && ingresoNull;
+
+    if (unidades === 0 && !isPackageParent) continue;
+
+    entries.push({
+      row: {
+        numeroVenta: numVenta,
+        fechaVenta: s(r[iFecha]),
+        estado,
+        descripcionEstado: s(r[iDescEstado]),
+        paquete,
+        perteneceKit: s(r[iKit]),
+        unidades,
+        ingresosPorProductos: n(r[iIngresos]),
+        ingresoEnvio: n(r[iIngresoEnvio]),
+        costoEnvio: n(r[iCostoEnvio]),
+        anulaciones: n(r[iAnulaciones]),
+        total: n(r[iTotal]),
+        mesFacturacion: s(r[iMes]),
+        ventaPublicidad: s(r[iPublicidad]),
+        sku,
+        publicacion: s(r[iPub]),
+        titulo: s(r[iTitulo]),
+        variante: s(r[iVariante]),
+        precioUnitario: n(r[iPrecio]),
+        tieneCuotas: s(r[iCuotas]),
+      },
+      isPackageParent,
+      isPackageSubRow,
     });
+  }
+
+  return resolvePackages(entries);
+}
+
+function resolvePackages(entries: RawEntry[]): MeliRow[] {
+  const result: MeliRow[] = [];
+  let i = 0;
+
+  while (i < entries.length) {
+    const entry = entries[i];
+
+    if (entry.isPackageParent) {
+      // Collect immediately following sub-rows
+      const subEntries: RawEntry[] = [];
+      let j = i + 1;
+      while (j < entries.length && entries[j].isPackageSubRow) {
+        subEntries.push(entries[j]);
+        j++;
+      }
+
+      if (subEntries.length > 0) {
+        const parent = entry.row;
+        const totalRevenue = subEntries.reduce(
+          (sum, e) => sum + e.row.precioUnitario * e.row.unidades,
+          0
+        );
+
+        for (const sub of subEntries) {
+          const subRevenue = sub.row.precioUnitario * sub.row.unidades;
+          const share =
+            totalRevenue > 0 ? subRevenue / totalRevenue : 1 / subEntries.length;
+
+          result.push({
+            ...sub.row,
+            ingresosPorProductos: subRevenue,
+            ingresoEnvio: parent.ingresoEnvio * share,
+            costoEnvio: parent.costoEnvio * share,
+            anulaciones: parent.anulaciones * share,
+            total: parent.total * share,
+            mesFacturacion: parent.mesFacturacion || sub.row.mesFacturacion,
+            tieneCuotas: parent.tieneCuotas || sub.row.tieneCuotas,
+          });
+        }
+        i = j;
+      } else {
+        // No sub-rows found — skip orphan package parent
+        i++;
+      }
+    } else {
+      result.push(entry.row);
+      i++;
+    }
   }
 
   return result;
