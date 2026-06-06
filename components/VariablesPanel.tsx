@@ -1,6 +1,6 @@
 "use client";
 import { useRef } from "react";
-import type { Variables, ComisionFijaTier, SkuConfig } from "@/types";
+import type { Variables, ComisionFijaTier } from "@/types";
 
 interface Props {
   vars: Variables;
@@ -70,66 +70,6 @@ function SectionHeader({ children, note }: { children: React.ReactNode; note?: s
   );
 }
 
-function SkuRow({
-  cfg,
-  defaultIva,
-  onChange,
-}: {
-  cfg: SkuConfig;
-  defaultIva: number;
-  onChange: (updated: SkuConfig) => void;
-}) {
-  const set = (partial: Partial<SkuConfig>) => onChange({ ...cfg, ...partial });
-
-  return (
-    <div className="border border-zinc-100 bg-zinc-50/50 p-2.5 space-y-2">
-      <p className="text-[10px] font-bold text-black uppercase tracking-wide truncate" title={cfg.sku}>
-        {cfg.sku}
-      </p>
-      {cfg.titulo && (
-        <p className="text-[10px] text-zinc-400 truncate -mt-1" title={cfg.titulo}>
-          {cfg.titulo}
-        </p>
-      )}
-      <div className="grid grid-cols-3 gap-1.5">
-        <div className="flex flex-col gap-0.5">
-          <label className="text-[9px] font-medium text-zinc-400 uppercase tracking-wide">LAND (USD)</label>
-          <input
-            type="number"
-            step="0.01"
-            className="w-full text-right border border-zinc-200 px-1.5 py-1 text-[11px] text-black bg-white focus:outline-none focus:border-black transition-colors"
-            value={cfg.costoLandUsd}
-            onChange={(e) => set({ costoLandUsd: parseFloat(e.target.value) || 0 })}
-          />
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <label className="text-[9px] font-medium text-zinc-400 uppercase tracking-wide">Com. %</label>
-          <div className="relative">
-            <input
-              type="number"
-              step="0.1"
-              className="w-full text-right border border-zinc-200 px-1.5 py-1 text-[11px] text-black bg-white focus:outline-none focus:border-black transition-colors"
-              value={(cfg.comisionPct * 100).toFixed(1)}
-              onChange={(e) => set({ comisionPct: parseFloat(e.target.value) / 100 || 0 })}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col gap-0.5">
-          <label className="text-[9px] font-medium text-zinc-400 uppercase tracking-wide">IVA %</label>
-          <select
-            className="w-full border border-zinc-200 px-1 py-1 text-[11px] text-black bg-white focus:outline-none focus:border-black transition-colors"
-            value={(cfg.ivaPct * 100).toFixed(1)}
-            onChange={(e) => set({ ivaPct: parseFloat(e.target.value) / 100 })}
-          >
-            <option value="21.0">21%</option>
-            <option value="10.5">10.5%</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function VariablesPanel({ vars, onChange, onSkuImport }: Props) {
   const set = (partial: Partial<Variables>) => onChange({ ...vars, ...partial });
   const skuImportRef = useRef<HTMLInputElement>(null);
@@ -141,11 +81,7 @@ export default function VariablesPanel({ vars, onChange, onSkuImport }: Props) {
     set({ comisionFijaTiers: tiers });
   };
 
-  const setSkuConfig = (sku: string, updated: SkuConfig) => {
-    set({ skuConfigs: { ...vars.skuConfigs, [sku]: updated } });
-  };
-
-  const skuList = Object.values(vars.skuConfigs).sort((a, b) => a.sku.localeCompare(b.sku));
+  const skuCount = Object.keys(vars.skuConfigs).length;
 
   return (
     <aside className="w-72 min-w-64 bg-white border-r border-zinc-200 flex flex-col h-full overflow-y-auto">
@@ -242,49 +178,34 @@ export default function VariablesPanel({ vars, onChange, onSkuImport }: Props) {
         />
       </section>
 
-      {/* Productos / SKUs */}
+      {/* Costos de productos */}
       <section className="px-5 py-5">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-400">Productos</p>
-            <p className="text-[10px] text-zinc-400 mt-0.5">Costo LAND, comisión e IVA por SKU</p>
-          </div>
-          <button
-            onClick={() => skuImportRef.current?.click()}
-            className="text-[10px] font-bold uppercase tracking-wide border border-zinc-300 px-2.5 py-1.5 text-zinc-600 hover:border-black hover:text-black transition-colors cursor-pointer whitespace-nowrap"
-          >
-            ↑ Importar
-          </button>
-          <input
-            ref={skuImportRef}
-            type="file"
-            accept=".xlsx,.xls"
-            className="hidden"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f) {
-                f.arrayBuffer().then((buf) => onSkuImport(buf));
-                e.target.value = "";
-              }
-            }}
-          />
-        </div>
-
-        {skuList.length === 0 ? (
-          <p className="text-[10px] text-zinc-400 text-center py-4 border border-dashed border-zinc-200">
-            Cargá el reporte de MeLi o importá<br />tu planilla de costos
+        <SectionHeader note="Planilla con columnas SKU, Landed, Com. ML">
+          Costos de productos
+        </SectionHeader>
+        <button
+          onClick={() => skuImportRef.current?.click()}
+          className="w-full flex items-center justify-center gap-2 border border-zinc-300 py-2.5 text-[11px] font-bold uppercase tracking-[0.1em] text-zinc-600 hover:border-black hover:text-black transition-colors cursor-pointer"
+        >
+          ↑ Importar Excel
+        </button>
+        <input
+          ref={skuImportRef}
+          type="file"
+          accept=".xlsx,.xls"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) {
+              f.arrayBuffer().then((buf) => onSkuImport(buf));
+              e.target.value = "";
+            }
+          }}
+        />
+        {skuCount > 0 && (
+          <p className="text-[10px] text-zinc-400 text-center mt-2">
+            {skuCount} SKU{skuCount !== 1 ? "s" : ""} cargado{skuCount !== 1 ? "s" : ""}
           </p>
-        ) : (
-          <div className="space-y-2">
-            {skuList.map((cfg) => (
-              <SkuRow
-                key={cfg.sku}
-                cfg={cfg}
-                defaultIva={vars.ivaPct}
-                onChange={(updated) => setSkuConfig(cfg.sku, updated)}
-              />
-            ))}
-          </div>
         )}
       </section>
     </aside>
