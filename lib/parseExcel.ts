@@ -20,7 +20,10 @@ function s(v: unknown): string {
 }
 
 function nullish(v: unknown): boolean {
-  return v == null || (typeof v === "number" && isNaN(v as number));
+  if (v == null) return true;
+  if (typeof v === "number" && isNaN(v)) return true;
+  if (typeof v === "string" && v.trim() === "") return true;
+  return false;
 }
 
 interface RawEntry {
@@ -89,8 +92,6 @@ export function parseExcel(buffer: ArrayBuffer): MeliRow[] {
     // Package sub-row: "Paquete de varios" has any value AND ingresos is null.
     // A row with "Paquete de varios" non-empty but WITH ingresos is a regular bundle (same SKU, N units).
     const isPackageSubRow = paquete.length > 0 && ingresoNull;
-
-    console.log(`[parse] row=${i} numVenta=${numVenta} estado=${JSON.stringify(estado)} paquete=${JSON.stringify(paquete)} paqueteLen=${paquete.length} ingresoRaw=${JSON.stringify(r[iIngresos])} ingresoNull=${ingresoNull} isParent=${isPackageParent} isSub=${isPackageSubRow} iPaquete=${iPaquete}`);
 
     if (unidades === 0 && !isPackageParent) continue;
 
